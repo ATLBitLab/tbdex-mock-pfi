@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "dependencies": {
-    "@tbdex/http-server": "0.0.5",
+    "@tbdex/http-server": "0.0.7",
     "@web5/common": "0.1.1-alpha-20230828-8204a49",
     "@web5/crypto": "0.1.6-alpha-20230828-8204a49",
     "@web5/dids": "0.1.9-alpha-20230828-8204a49",
