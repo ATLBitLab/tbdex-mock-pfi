@@ -6,10 +6,12 @@ import { Postgres } from './postgres.js'
 class _ExchangeRepository implements ExchangesApi {
   getExchanges(opts: { filter: GetExchangesFilter }): Promise<MessageKindClass[][]> {
     // TODO: try out GROUP BY! would do it now, just unsure what the return structure looks like
-    const { filter } = opts
     const promises: Promise<MessageKindClass[]>[] = []
-
-    for (let id of filter.exchangeId ? filter.exchangeId : []) {
+    const exchangeIds = opts.filter?.exchangeId
+    if (!exchangeIds) {
+      // find all exchangeIds sent by subject
+    }
+    for (let id of exchangeIds) {
       // TODO: handle error property
       const promise = this.getExchange({ id }).catch(_e => [])
       promises.push(promise)
