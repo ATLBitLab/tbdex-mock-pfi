@@ -1,4 +1,4 @@
-import type { Close, MessageKind, MessageKindClass, Order, OrderStatus, Quote, ExchangesApi, Rfq, GetExchangesFilter } from '@tbdex/http-server'
+import type { Close, MessageKind, MessageKindClass, Order, OrderStatus, Quote, ExchangesApi, Rfq, GetExchangesFilter, MessageModel } from '@tbdex/http-server'
 import { Message } from '@tbdex/http-server'
 
 import { Postgres } from './postgres.js'
@@ -6,9 +6,19 @@ import { Postgres } from './postgres.js'
 class _ExchangeRepository implements ExchangesApi {
   getExchanges(opts: { filter: GetExchangesFilter }): Promise<MessageKindClass[][]> {
     // TODO: try out GROUP BY! would do it now, just unsure what the return structure looks like
-    const { filter } = opts
     const promises: Promise<MessageKindClass[]>[] = []
-    for (let id of filter.exchangeId) {
+    const exchangeIds = []
+
+    if (opts.filter && typeof(opts.filter.exchangeId) == 'string') {
+      exchangeIds.push(opts.filter.exchangeId)
+    }
+
+    if (exchangeIds.length == 0) {
+      return this.getAllExchanges()
+    }
+
+    for (let id of exchangeIds) {
+      console.log('calling id', id)
       // TODO: handle error property
       const promise = this.getExchange({ id }).catch(_e => [])
       promises.push(promise)
@@ -17,8 +27,20 @@ class _ExchangeRepository implements ExchangesApi {
     return Promise.all(promises)
   }
 
+  async getAllExchanges(): Promise<MessageKindClass[][]> {
+
+    const results = await Postgres.client.selectFrom('exchange')
+      .select(['message'])
+      .orderBy('createdat', 'asc')
+      .execute()
+
+    const messages: MessageKindClass[] = this.composeMessages(results)
+
+    return [messages]
+  }
+
   async getExchange(opts: { id: string }): Promise<MessageKindClass[]> {
-    console.log(opts.id)
+    console.log('getting exchange for id', opts.id)
     const results = await Postgres.client.selectFrom('exchange')
       .select(['message'])
       .where(eb => eb.and({
@@ -27,15 +49,19 @@ class _ExchangeRepository implements ExchangesApi {
       .orderBy('createdat', 'asc')
       .execute()
 
+    const messages = this.composeMessages(results)
+
+    return messages
+  }
+
+  private composeMessages(results: { message: MessageModel<MessageKind> }[]) {
+
     const messages: MessageKindClass[] = []
 
     for (let result of results) {
       const message = Message.fromJson(result.message)
       messages.push(message)
     }
-
-    console.log('RESULTS', JSON.stringify(results, null, 2))
-
     return messages
   }
 

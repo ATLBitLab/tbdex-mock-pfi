@@ -11,72 +11,83 @@ await Postgres.clear()
 const offering = Offering.create({
   metadata: { from: config.did.id },
   data: {
-    description  : 'Selling BTC for USD',
-    baseCurrency : {
-      currencyCode : 'BTC',
-      maxSubunits  : '99952611'
-    },
-    quoteCurrency: {
-      currencyCode: 'USD'
-    },
-    quoteUnitsPerBaseUnit : '26043.40',
+    description           : 'fake offering 1',
+    quoteUnitsPerBaseUnit : '0.0069', // ex. we send 100 dollars, so that means 14550.00 KES
+    baseCurrency          : { currencyCode: 'KES' },
+    quoteCurrency         : { currencyCode: 'USD' },
     payinMethods          : [{
-      kind                   : 'DEBIT_CARD',
-      requiredPaymentDetails : {
-        $schema    : 'http://json-schema.org/draft-07/schema',
-        type       : 'object',
-        properties : {
-          cardNumber: {
-            type        : 'string',
-            description : 'The 16-digit debit card number',
-            minLength   : 16,
-            maxLength   : 16
-          },
-          expiryDate: {
-            type        : 'string',
-            description : 'The expiry date of the card in MM/YY format',
-            pattern     : '^(0[1-9]|1[0-2])\\/([0-9]{2})$'
-          },
-          cardHolderName: {
-            type        : 'string',
-            description : 'Name of the cardholder as it appears on the card'
-          },
-          cvv: {
-            type        : 'string',
-            description : 'The 3-digit CVV code',
-            minLength   : 3,
-            maxLength   : 3
-          }
-        },
-        required             : ['cardNumber', 'expiryDate', 'cardHolderName', 'cvv'],
-        additionalProperties : false
-      }
+      kind                   : 'USD_LEDGER',
+      requiredPaymentDetails : { }
     }],
-    payoutMethods: [{
-      kind                   : 'BTC_ADDRESS',
-      requiredPaymentDetails : {
-        $schema    : 'http://json-schema.org/draft-07/schema',
-        type       : 'object',
-        properties : {
-          btcAddress: {
-            type        : 'string',
-            description : 'your Bitcoin wallet address'
+    payoutMethods: [
+      {
+        kind                   : 'MOMO_MPESA',
+        requiredPaymentDetails : {
+          '$schema'  : 'http://json-schema.org/draft-07/schema#',
+          'title'    : 'Mobile Money Required Payment Details',
+          'type'     : 'object',
+          'required' : [
+            'phoneNumber',
+            'reason'
+          ],
+          'additionalProperties' : false,
+          'properties'           : {
+            'phoneNumber': {
+              'title'       : 'Mobile money phone number',
+              'description' : 'Phone number of the Mobile Money account',
+              'type'        : 'string'
+            },
+            'reason': {
+              'title'       : 'Reason for sending',
+              'description' : 'To abide by the travel rules and financial reporting requirements, the reason for sending money',
+              'type'        : 'string'
+            }
           }
-        },
-        required             : ['btcAddress'],
-        additionalProperties : false
+        }
+      },
+      {
+        kind                   : 'BANK_FIRSTBANK',
+        requiredPaymentDetails : {
+          '$schema'  : 'http://json-schema.org/draft-07/schema#',
+          'title'    : 'Bank Transfer Required Payment Details',
+          'type'     : 'object',
+          'required' : [
+            'accountNumber',
+            'reason'
+          ],
+          'additionalProperties' : false,
+          'properties'           : {
+            'accountNumber': {
+              'title'       : 'Bank account number',
+              'description' : 'Bank account of the recipient\'s bank account',
+              'type'        : 'string'
+            },
+            'reason': {
+              'title'       : 'Reason for sending',
+              'description' : 'To abide by the travel rules and financial reporting requirements, the reason for sending money',
+              'type'        : 'string'
+            }
+          }
+        }
       }
-    }],
+    ],
     requiredClaims: {
       id                : '7ce4004c-3c38-4853-968b-e411bafcd945',
       input_descriptors : [{
         id          : 'bbdb9b7c-5754-4f46-b63b-590bada959e0',
         constraints : {
           fields: [{
+            path   : ['$.issuer'],
+            filter : {
+              type  : 'string',
+              const : 'did:ion:EiD6Jcwrqb5lFLFWyW59uLizo5lBuChieiqtd0TFN0xsng:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJ6cC1mNnFMTW1EazZCNDFqTFhIXy1kd0xOLW9DS2lTcDJaa19WQ2t4X3ZFIiwicHVibGljS2V5SndrIjp7ImNydiI6InNlY3AyNTZrMSIsImt0eSI6IkVDIiwieCI6IjNmVFk3VXpBaU9VNVpGZ05VVjl3bm5pdEtGQk51RkNPLWxlRXBDVzhHOHMiLCJ5IjoidjJoNlRqTDF0TnYwSDNWb09Fbll0UVBxRHZOVC0wbVdZUUdLTGRSakJ3ayJ9LCJwdXJwb3NlcyI6WyJhdXRoZW50aWNhdGlvbiJdLCJ0eXBlIjoiSnNvbldlYktleTIwMjAifV0sInNlcnZpY2VzIjpbXX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQjk3STI2bmUwdkhXYXduODk1Y1dnVlE0cFF5NmN1OUFlSzV2aW44X3JVeXcifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaURqSmlEdm9RekstRl94V05VVzlzMTBUVmlpdEI0Z1JoS09iYlh2S1pwdlNRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCbEk1NWx6b3JoeE42TVBqUlZtV2ZZY3MxNzNKOFk3S0hTeU5LcmZiTzVfdyJ9fQ'
+            }
+          },
+          {
             path   : ['$.type'],
             filter : {
               type  : 'string',
-              const : 'YoloCredential'
+              const : 'SanctionCredential'
             }
           }]
         }
