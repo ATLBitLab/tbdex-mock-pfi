@@ -4,7 +4,6 @@ import { Offering } from '@tbdex/http-server'
 import { Postgres } from './postgres.js'
 
 export class _OfferingRepository implements OfferingsApi {
-
   async create(offering: Offering) {
     let result = await Postgres.client.insertInto('offering')
       .values({

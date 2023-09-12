@@ -43,9 +43,10 @@ export const config: Config = {
   allowlist: JSON.parse(process.env['SEC_ALLOWLISTED_DIDS'] || '[]')
 }
 
-// create ephemeral DIDPay did if one wasn't provided. Note: this DID and associated keys aren't persisted!
-// a new one will be generated every time the process starts. use `scripts/create-ion-did.ts` to create
+// create ephemeral PFI did if one wasn't provided. Note: this DID and associated keys aren't persisted!
+// a new one will be generated every time the process starts.
 if (!config.did.id) {
+  console.log('Creating an ephemeral DID.....')
   const DidIon = await DidIonMethod.create({
     services: [{ id: 'pfi', type: 'PFI', serviceEndpoint: config.host }]
   })
