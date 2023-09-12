@@ -40,7 +40,7 @@ class _ExchangeRepository implements ExchangesApi {
   }
 
   async getExchange(opts: { id: string }): Promise<MessageKindClass[]> {
-    console.log(opts.id)
+    console.log('getting exchange for id', opts.id)
     const results = await Postgres.client.selectFrom('exchange')
       .select(['message'])
       .where(eb => eb.and({
