@@ -97,6 +97,7 @@ class _ExchangeRepository implements ExchangesApi {
       .values({
         exchangeId: message.exchangeId,
         messageKind: message.kind,
+        messageId: message.id,
         subject,
         message: JSON.stringify(message)
       })
