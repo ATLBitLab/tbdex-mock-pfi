@@ -15,8 +15,10 @@ else
   echo "Creating & starting $CONTAINER_NAME"
   docker run --detach \
     --name $CONTAINER_NAME \
-    --env MYSQL_DATABASE=$DP_SEC_DB_NAME \
-    --env MYSQL_ROOT_PASSWORD=$DP_SEC_DB_PASSWORD \
-    --publish $DP_SEC_DB_PORT:3306 \
-    mysql:8.0.32
+    --env POSTGRES_USER=$DP_SEC_DB_USER \
+    --env POSTGRES_DB=$DP_SEC_DB_NAME \
+    --env POSTGRES_PASSWORD=$DP_SEC_DB_PASSWORD \
+    --env PGSSLMODE=disable \
+    --publish $DP_SEC_DB_PORT:5432 \
+    postgres:15.4
 fi

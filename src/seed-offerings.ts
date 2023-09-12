@@ -1,12 +1,12 @@
 import './polyfills.js'
 
-import { Mysql, OfferingRepository } from './db/index.js'
+import { Postgres, OfferingRepository } from './db/index.js'
 import { Offering } from '@tbdex/http-server'
 import { config } from './config.js'
 
-await Mysql.connect()
-await Mysql.ping()
-await Mysql.clear()
+await Postgres.connect()
+// await Postgres.ping()
+await Postgres.clear()
 
 const offering = Offering.create({
   metadata: { from: config.did.id },

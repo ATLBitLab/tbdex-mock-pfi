@@ -1,12 +1,13 @@
 -- migrate:up
-CREATE TABLE Offering (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  offeringId VARCHAR(255) NOT NULL,
-  baseCurrency VARCHAR(3) NOT NULL,
-  quoteCurrency VARCHAR(3) NOT NULL,
+CREATE TABLE offering (
+  id SERIAL PRIMARY KEY,
+  offeringid VARCHAR(255) NOT NULL,
+  basecurrency CHAR(3) NOT NULL,
+  quotecurrency CHAR(3) NOT NULL,
   offering JSON NOT NULL,
-  INDEX (offeringId)
+  CONSTRAINT offeringid_idx UNIQUE (offeringid)
 );
 
+
 -- migrate:down
-DROP TABLE Offering;
+DROP TABLE offering;

@@ -1,15 +1,16 @@
 -- migrate:up
-CREATE TABLE Exchange (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  exchangeId VARCHAR(255) NOT NULL,
-  messageId VARCHAR(255) UNIQUE NOT NULL,
+CREATE TABLE exchange (
+  id SERIAL PRIMARY KEY,
+  exchangeid VARCHAR(255) NOT NULL,
+  messageid VARCHAR(255) UNIQUE NOT NULL,
   subject VARCHAR(255) NOT NULL,
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  messageKind ENUM('rfq', 'quote', 'order', 'close', 'orderstatus') NOT NULL,
-  message JSON NOT NULL,
-  INDEX (exchangeId),
-  INDEX (subject),
-  INDEX (messageKind)
+  createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  messagekind TEXT CHECK (messageKind IN ('rfq', 'quote', 'order', 'close', 'orderstatus')) NOT NULL,
+  message JSON NOT NULL
 );
+
+CREATE INDEX exchangeid_idx ON exchange(exchangeid);
+CREATE INDEX subject_idx ON exchange(subject);
+CREATE INDEX messagekind_idx ON exchange(messagekind);
 -- migrate:down
-DROP TABLE Exchange;
+DROP TABLE exchange;

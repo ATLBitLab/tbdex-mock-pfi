@@ -1,7 +1,7 @@
 import type { Close, MessageKind, MessageKindClass, Order, OrderStatus, Quote, ExchangesApi, Rfq, GetExchangesFilter } from '@tbdex/http-server'
 import { Message } from '@tbdex/http-server'
 
-import { Mysql } from './mysql.js'
+import { Postgres } from './postgres.js'
 
 class _ExchangeRepository implements ExchangesApi {
   getExchanges(opts: { filter: GetExchangesFilter }): Promise<MessageKindClass[][]> {
@@ -19,12 +19,12 @@ class _ExchangeRepository implements ExchangesApi {
 
   async getExchange(opts: { id: string }): Promise<MessageKindClass[]> {
     console.log(opts.id)
-    const results = await Mysql.client.selectFrom('Exchange')
+    const results = await Postgres.client.selectFrom('exchange')
       .select(['message'])
       .where(eb => eb.and({
-        exchangeId: opts.id,
+        exchangeid: opts.id,
       }))
-      .orderBy('createdAt', 'asc')
+      .orderBy('createdat', 'asc')
       .execute()
 
     const messages: MessageKindClass[] = []
@@ -52,11 +52,11 @@ class _ExchangeRepository implements ExchangesApi {
   }
 
   async getOrderStatuses(opts: { exchangeId: string }): Promise<OrderStatus[]> {
-    const results = await Mysql.client.selectFrom('Exchange')
+    const results = await Postgres.client.selectFrom('exchange')
       .select(['message'])
       .where(eb => eb.and({
-        exchangeId: opts.exchangeId,
-        messageKind: 'orderstatus'
+        exchangeid: opts.exchangeId,
+        messagekind: 'orderstatus'
       }))
       .execute()
 
@@ -75,11 +75,11 @@ class _ExchangeRepository implements ExchangesApi {
   }
 
   async getMessage(opts: { exchangeId: string, messageKind: MessageKind }) {
-    const result = await Mysql.client.selectFrom('Exchange')
+    const result = await Postgres.client.selectFrom('exchange')
       .select(['message'])
       .where(eb => eb.and({
-        exchangeId: opts.exchangeId,
-        messageKind: opts.messageKind
+        exchangeid: opts.exchangeId,
+        messagekind: opts.messageKind
       }))
       .limit(1)
       .executeTakeFirst()
@@ -93,11 +93,11 @@ class _ExchangeRepository implements ExchangesApi {
     const { message } = opts
     const subject = aliceMessageKinds.has(message.kind) ? message.from : message.to
 
-    const result = await Mysql.client.insertInto('Exchange')
+    const result = await Postgres.client.insertInto('exchange')
       .values({
-        exchangeId: message.exchangeId,
-        messageKind: message.kind,
-        messageId: message.id,
+        exchangeid: message.exchangeId,
+        messagekind: message.kind,
+        messageid: message.id,
         subject,
         message: JSON.stringify(message)
       })

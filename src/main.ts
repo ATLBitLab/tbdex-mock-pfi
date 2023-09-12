@@ -5,7 +5,7 @@ import type { Rfq, Order, Close } from '@tbdex/http-server'
 
 import log from './logger.js'
 import { config } from './config.js'
-import { Mysql, ExchangeRespository, OfferingRepository } from './db/index.js'
+import { Postgres, ExchangeRespository, OfferingRepository } from './db/index.js'
 import { HttpServerShutdownHandler } from './http-shutdown-handler.js'
 import { TbdexHttpServer } from '@tbdex/http-server'
 
@@ -31,7 +31,7 @@ process.on('SIGTERM', async () => {
   gracefulShutdown()
 })
 
-await Mysql.ping()
+// await Postgres.ping()
 
 const httpApi = new TbdexHttpServer({ exchangesApi: ExchangeRespository, offeringsApi: OfferingRepository })
 
@@ -59,8 +59,8 @@ function gracefulShutdown() {
   httpServerShutdownHandler.stop(async () => {
     log.info('http server stopped.')
 
-    log.info('closing mysql connections')
-    await Mysql.close()
+    log.info('closing Postgres connections')
+    await Postgres.close()
 
     process.exit(0)
   })

@@ -1,4 +1,4 @@
-import type mysql from 'mysql2'
+import type { PoolConfig } from 'pg'
 
 import type { LogLevelDesc } from 'loglevel'
 
@@ -14,7 +14,7 @@ export type Config = {
   logLevel: LogLevelDesc
   host: string;
   port: number;
-  db: mysql.PoolOptions
+  db: PoolConfig
   did: {
     id: string
     privateKey: PrivateKeyJwk
@@ -30,8 +30,8 @@ export const config: Config = {
   port     : parseInt(process.env['PORT'] || '9000'),
   db: {
     host     : process.env['SEC_DB_HOST'] || 'localhost',
-    port     : parseInt(process.env['SEC_DB_PORT'] || '3308'),
-    user     : process.env['SEC_DB_USER'] || 'root',
+    port     : parseInt(process.env['SEC_DB_PORT'] || '5432'),
+    user     : process.env['SEC_DB_USER'] || 'postgres',
     password : process.env['SEC_DB_PASSWORD'] || 'tbd',
     database : process.env['SEC_DB_NAME'] || 'mockpfi'
   },

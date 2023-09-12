@@ -1,16 +1,16 @@
 import type { OfferingsApi } from '@tbdex/http-server'
 
 import { Offering } from '@tbdex/http-server'
-import { Mysql } from './mysql.js'
+import { Postgres } from './postgres.js'
 
 export class _OfferingRepository implements OfferingsApi {
 
   async create(offering: Offering) {
-    let result = await Mysql.client.insertInto('Offering')
+    let result = await Postgres.client.insertInto('offering')
       .values({
-        offeringId: offering.id,
-        baseCurrency: offering.baseCurrency.currencyCode,
-        quoteCurrency: offering.quoteCurrency.currencyCode,
+        offeringid: offering.id,
+        basecurrency: offering.baseCurrency.currencyCode,
+        quotecurrency: offering.quoteCurrency.currencyCode,
         offering: JSON.stringify(offering)
       })
       .execute()
@@ -19,9 +19,9 @@ export class _OfferingRepository implements OfferingsApi {
   }
 
   async getOffering(opts: {id: string}): Promise<Offering> {
-    const [ result ] =  await Mysql.client.selectFrom('Offering')
+    const [ result ] =  await Postgres.client.selectFrom('offering')
       .select(['offering'])
-      .where('offeringId', '=', opts.id)
+      .where('offeringid', '=', opts.id)
       .execute()
 
     if (!result) {
@@ -33,7 +33,7 @@ export class _OfferingRepository implements OfferingsApi {
   }
 
   async getOfferings(): Promise<Offering[]> {
-    const results =  await Mysql.client.selectFrom('Offering')
+    const results =  await Postgres.client.selectFrom('offering')
       .select(['offering'])
       .execute()
 
