@@ -51,7 +51,9 @@ const server = httpApi.listen(config.port, () => {
   log.info(`Mock PFI listening on port ${config.port}`)
 })
 
-console.log('PFI DID:', config.did.id)
+console.log('PFI DADDDDD: ', config.did.id)
+console.log('PFI DADDDDD KEYY: ', JSON.stringify(config.did.privateKey))
+console.log('PFI DADDDDD KIDD: ', config.did.kid)
 
 const httpServerShutdownHandler = new HttpServerShutdownHandler(server)
 
