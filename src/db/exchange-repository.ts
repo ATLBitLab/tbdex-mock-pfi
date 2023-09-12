@@ -8,7 +8,8 @@ class _ExchangeRepository implements ExchangesApi {
     // TODO: try out GROUP BY! would do it now, just unsure what the return structure looks like
     const { filter } = opts
     const promises: Promise<MessageKindClass[]>[] = []
-    for (let id of filter.exchangeId) {
+
+    for (let id of filter.exchangeId ? filter.exchangeId : []) {
       // TODO: handle error property
       const promise = this.getExchange({ id }).catch(_e => [])
       promises.push(promise)
