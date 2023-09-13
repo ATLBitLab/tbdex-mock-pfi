@@ -55,7 +55,12 @@ console.log('PFI DADDDDD: ', config.did.id)
 console.log('PFI DADDDDD KEYY: ', JSON.stringify(config.did.privateKey))
 console.log('PFI DADDDDD KIDD: ', config.did.kid)
 
+httpApi.api.get('/', (req, res) => {
+  res.send('Please use the tbdex protocol to communicate with this server or a suitable library: https://github.com/TBD54566975/tbdex-protocol')
+})
+
 const httpServerShutdownHandler = new HttpServerShutdownHandler(server)
+
 
 function gracefulShutdown() {
   httpServerShutdownHandler.stop(async () => {
